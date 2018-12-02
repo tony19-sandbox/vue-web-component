@@ -1,29 +1,51 @@
-# web-component-project
+> Demo for https://stackoverflow.com/q/53431754/6277151
 
-## Project setup
-```
-npm install
-```
+This demo configures this Vue CLI project to enable Shadow CSS in Vue
+web components with hot module reloading. The only change needed here
+is to add [`<projectroot>/vue.config.js`](https://cli.vuejs.org/config/#vue-config-js)
+with the following contents:
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+    function enableShadowCss(config) {
+      const setShadowModeOption = (options) => {
+        options.shadowMode = true;
+        return options;
+      };
 
-### Compiles and minifies for production
-```
-npm run build
-```
+      const cssProcessors = [
+        'css',
+        'stylus',
+        'less',
+        'sass',
+        'scss',
+        'postcss'
+      ];
+      const moduleTypes = [
+        'normal',
+        'normal-modules',
+        'vue',
+        'vue-modules',
+      ];
 
-### Run your tests
-```
-npm run test
-```
+      for (const p of cssProcessors) {
+        for (const m of moduleTypes) {
+          config.module
+            .rule(p)
+            .oneOf(m)
+            .use('vue-style-loader')
+            .loader('vue-style-loader')
+            .tap(setShadowModeOption);
+        }
+      }
 
-### Lints and fixes files
-```
-npm run lint
-```
+      config.module
+        .rule('vue')
+        .use('vue-loader')
+        .loader('vue-loader')
+        .tap(setShadowModeOption);
+    }
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+    module.exports = {
+      chainWebpack: config => {
+        enableShadowCss(config);
+      }
+    }
